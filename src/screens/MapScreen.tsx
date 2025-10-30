@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import MapView, {
   Marker,
@@ -22,15 +22,14 @@ export default function MapScreen({navigation}: Props) {
   const onLongPress = useCallback((e: LongPressEvent) => {
     const {latitude, longitude} = e.nativeEvent.coordinate;
     setMarker({lat: latitude, lon: longitude});
-    setCity(null);
-    setTempC(null);
+
   }, []);
 
   const fetchInfo = useCallback(async () => {
     if (!marker) {
       return;
     }
-    setLoading(true);
+
     try {
       const [name, current] = await Promise.all([
         reverseGeocodeCity(marker.lat, marker.lon),
@@ -42,6 +41,15 @@ export default function MapScreen({navigation}: Props) {
       setLoading(false);
     }
   }, [marker]);
+
+  useEffect(() => {
+    if (marker) {
+      setCity(null);
+      setTempC(null);
+      setLoading(true);
+      fetchInfo();
+    }
+  }, [marker, fetchInfo]);
 
   const onCalloutPress = useCallback(() => {
     if (!marker) {
@@ -73,7 +81,7 @@ export default function MapScreen({navigation}: Props) {
         {marker && (
           <Marker
             coordinate={{latitude: marker.lat, longitude: marker.lon}}
-            onPress={fetchInfo}>
+          >
             <Callout onPress={onCalloutPress}>
               <View style={styles.callout}>
                 {loading ? (
@@ -112,6 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   callout: {
+    minHeight: 120,
     maxWidth: 220,
     padding: 8,
   },

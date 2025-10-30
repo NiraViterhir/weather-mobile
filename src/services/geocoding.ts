@@ -1,16 +1,16 @@
 import axios from 'axios';
 
+const API_KEY = "AIzaSyAOK7lvPEYcqyWAQ6gVG3EZAeqbIMUSEMU";
+
 export async function reverseGeocodeCity(
   lat: number,
   lon: number,
 ): Promise<string | null> {
-  // Use Open-Meteo reverse geocoding to avoid requiring Google reverse geocode
-  const url = 'https://geocoding-api.open-meteo.com/v1/reverse';
+  const url = 'https://maps.googleapis.com/maps/api/geocode/json';
   const {data} = await axios.get(url, {
     params: {
-      latitude: lat,
-      longitude: lon,
-      language: 'en',
+      latlng: `${lat},${lon}`,
+      key:API_KEY,
       format: 'json',
     },
   });
@@ -18,5 +18,5 @@ export async function reverseGeocodeCity(
   if (!item) {
     return null;
   }
-  return item.city || item.name || item.admin1 || null;
+  return item.formatted_address;
 }
