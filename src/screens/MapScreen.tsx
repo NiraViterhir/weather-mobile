@@ -1,55 +1,40 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import MapView, {
-  Marker,
-  Callout,
-  Region,
-  LongPressEvent,
-} from 'react-native-maps';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import MapView, { Callout, LatLng, MapPressEvent, Marker, Region, } from 'react-native-maps';
 import { reverseGeocodeCity } from '../services/geocoding';
 import { getCurrentWeather } from '../services/weather';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { RootTabParamList } from '../navigation/types';
 
 type Props = BottomTabScreenProps<RootTabParamList, 'Map'>;
+type CityWeatherInfo = { name: string, temperature: number };
 
 export default function MapScreen({navigation}: Props) {
-  const [marker, setMarker] = useState<{ lat: number; lon: number } | null>(null);
+  const [marker, setMarker] = useState<LatLng | null>(null);
   const [city, setCity] = useState<string | null>(null);
   const [tempC, setTempC] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const onLongPress = useCallback((e: LongPressEvent) => {
-    const {latitude, longitude} = e.nativeEvent.coordinate;
-    setMarker({lat: latitude, lon: longitude});
+  const onPress = useCallback(async (e: MapPressEvent) => {
+    const newCoordinates = e.nativeEvent.coordinate;
 
+    const {name: cityName, temperature} = await fetchInfo(newCoordinates);
+    setMarker(newCoordinates);
+    setCity(cityName);
+    setTempC(temperature);
   }, []);
 
-  const fetchInfo = useCallback(async () => {
-    if (!marker) {
-      return;
-    }
-
+  const fetchInfo = async (marker: LatLng): Promise<CityWeatherInfo> => {
     try {
       const [name, current] = await Promise.all([
-        reverseGeocodeCity(marker.lat, marker.lon),
-        getCurrentWeather(marker.lat, marker.lon),
+        reverseGeocodeCity(marker.latitude, marker.longitude),
+        getCurrentWeather(marker.latitude, marker.longitude),
       ]);
-      setCity(name || 'Unknown city');
-      setTempC(current?.tempC ?? null);
+      return {name: name || "error", temperature: current?.tempC ?? 0};
     } finally {
       setLoading(false);
-    }
-  }, [marker]);
-
-  useEffect(() => {
-    if (marker) {
-      setCity(null);
-      setTempC(null);
-      setLoading(true);
-      fetchInfo();
-    }
-  }, [marker, fetchInfo]);
+    } // @TODO: Handle errors
+  };
 
   const onCalloutPress = useCallback(() => {
     if (!marker) {
@@ -57,14 +42,14 @@ export default function MapScreen({navigation}: Props) {
     }
     navigation.navigate('Weather', {
       city: city || 'Selected location',
-      lat: marker.lat,
-      lon: marker.lon,
+      lat: marker.latitude,
+      lon: marker.longitude,
     });
   }, [marker, city, navigation]);
 
   const initialRegion: Region = useMemo(
     () => ({
-      latitude:  49.1728522589072,
+      latitude: 49.1728522589072,
       longitude: 25.012891600077154,
       latitudeDelta: 3,
       longitudeDelta: 0.0421,
@@ -77,10 +62,10 @@ export default function MapScreen({navigation}: Props) {
       <MapView
         style={StyleSheet.absoluteFill}
         initialRegion={initialRegion}
-        onLongPress={onLongPress}>
+        onPress={onPress}>
         {marker && (
           <Marker
-            coordinate={{latitude: marker.lat, longitude: marker.lon}}
+            coordinate={marker}
           >
             <Callout onPress={onCalloutPress}>
               <View style={styles.callout}>
@@ -107,7 +92,7 @@ export default function MapScreen({navigation}: Props) {
       {!marker && (
         <View style={styles.tip}>
           <Text style={styles.tipText}>
-            Long-press anywhere to drop a marker
+            Tap anywhere to drop a marker
           </Text>
         </View>
       )}
