@@ -13,7 +13,7 @@ const Tab = createBottomTabNavigator<RootTabParamList>();
 type TabBarIconProps = { focused: boolean; color: string; size: number };
 
 function getTabBarIconForRoute(routeName: keyof RootTabParamList) {
-  return ({ focused, color, size }: TabBarIconProps) => {
+  return ({ focused, color, size: _size }: TabBarIconProps) => {
     let iconName: IoniconsIconName = 'bug';
 
     if (routeName === 'Map') {
@@ -22,7 +22,7 @@ function getTabBarIconForRoute(routeName: keyof RootTabParamList) {
       iconName = focused ? 'cloud' : 'cloud-outline';
     }
 
-    return <Ionicons name={iconName} size={size} color={color} />;
+    return <Ionicons name={iconName} size={29} color={color} />;
   };
 }
 
@@ -32,6 +32,7 @@ function createScreenOptions({ route }: { route: { name: keyof RootTabParamList 
     tabBarIcon: getTabBarIconForRoute(route.name),
     tabBarActiveTintColor: '#007AFF',
     tabBarInactiveTintColor: 'gray',
+    tabBarShowLabel: false,
   };
 }
 
