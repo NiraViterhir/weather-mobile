@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 import MapView, { Callout, LatLng, MapPressEvent, Marker, Region, } from 'react-native-maps';
 import { reverseGeocodeCity } from '../services/geocoding';
 import { getCurrentWeather } from '../services/weather';
@@ -17,23 +17,35 @@ export default function MapScreen({navigation}: Props) {
 
   const onPress = useCallback(async (e: MapPressEvent) => {
     const newCoordinates = e.nativeEvent.coordinate;
-
-    const {name: cityName, temperature} = await fetchInfo(newCoordinates);
-    setMarker(newCoordinates);
-    setCity(cityName);
-    setTempC(temperature);
-  }, []);
-
-  const fetchInfo = async (marker: LatLng): Promise<CityWeatherInfo> => {
+    setLoading(true);
     try {
-      const [name, current] = await Promise.all([
-        reverseGeocodeCity(marker.latitude, marker.longitude),
-        getCurrentWeather(marker.latitude, marker.longitude),
-      ]);
-      return {name: name || "error", temperature: current?.tempC ?? 0};
+      const {name: cityName, temperature} = await fetchInfo(newCoordinates);
+      setMarker(newCoordinates);
+      setCity(cityName);
+      setTempC(temperature);
+    } catch (err) {
+      console.error('Failed to fetch city/weather for tapped location', err);
+      const message = err instanceof Error ? err.message : 'Please try again.';
+      Alert.alert('Unable to load location', message);
+      setMarker(newCoordinates);
+      setCity('Error');
+      setTempC(null);
     } finally {
       setLoading(false);
-    } // @TODO: Handle errors
+    }
+  }, []);
+
+  const fetchInfo = async (coords: LatLng): Promise<CityWeatherInfo> => {
+    try {
+      const [name, current] = await Promise.all([
+        reverseGeocodeCity(coords.latitude, coords.longitude),
+        getCurrentWeather(coords.latitude, coords.longitude),
+      ]);
+      return {name: name || "error", temperature: current?.tempC ?? 0};
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      throw new Error(`Error fetching city and temperature: ${message}`);
+    }
   };
 
   const onCalloutPress = useCallback(() => {
