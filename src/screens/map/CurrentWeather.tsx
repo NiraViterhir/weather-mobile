@@ -1,5 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { parseLocationLabel } from "../../utils/parseLocation.ts";
 
 interface CurrentWeatherProps {
   loading: boolean,
@@ -8,18 +9,34 @@ interface CurrentWeatherProps {
 }
 
 export default function CurrentWeather(props: CurrentWeatherProps) {
+  const [city, setCity] = useState<string | null>(props.city);
+  const [district, setDistrict] = useState<string | null>(props.city);
+
+  useEffect(() => {
+    if (props.city) {
+      const {city, rest} = parseLocationLabel(props.city);
+      setCity(city);
+      setDistrict(rest);
+    }
+  }, [props.city]);
+
   return (
     <View style={styles.callout}>
       {props.loading ? (
         <ActivityIndicator/>
       ) : (
         <>
-          <Text style={styles.title}>
-            {props.city || 'No city name'}
+          <View style={styles.cityAndTemp}>
+            <Text style={styles.city}>
+              {city || 'No city name'}
+            </Text>
+            {props.tempC != null && (
+              <Text style={styles.temperature}>{Math.round(props.tempC)}°C</Text>
+            )}
+          </View>
+          <Text style={styles.district}>
+            {district || 'No district name'}
           </Text>
-          {props.tempC != null && (
-            <Text style={styles.subtitle}>{Math.round(props.tempC)}°C</Text>
-          )}
           <Text style={styles.hint}>
             Tap to view weekly forecast →
           </Text>
@@ -31,16 +48,25 @@ export default function CurrentWeather(props: CurrentWeatherProps) {
 
 const styles = StyleSheet.create({
   callout: {
-    minHeight: 120,
+    minHeight: 80,
     maxWidth: 220,
     padding: 8,
   },
-  title: {
+  cityAndTemp:{
+    flexDirection: 'row',
+    justifyContent:"space-between"
+  },
+  city: {
     fontWeight: '600',
     fontSize: 16,
     marginBottom: 4,
   },
-  subtitle: {
+  district: {
+    marginBottom: 8,
+    fontSize: 12,
+    color: '#344ba6',
+  },
+  temperature: {
     fontSize: 14,
     marginBottom: 4,
   },

@@ -4,7 +4,7 @@ import React, { Dispatch, SetStateAction } from "react";
 interface SearchProps {
   query: string,
   setQuery: Dispatch<SetStateAction<string>>,
-  onSubmitSearch: () => {},
+  onSubmitSearch: () => void,
 }
 
 export default function Search(props: SearchProps) {
