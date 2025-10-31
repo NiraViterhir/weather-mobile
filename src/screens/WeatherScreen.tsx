@@ -6,15 +6,18 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  TextInput,
+  Alert,
 } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import type { RootTabParamList } from '../navigation/types';
-import { getWeeklyForecast, DailyForecast } from '../services/weather';
+import { getWeeklyForecast, DailyForecast, getWeatherByCityName } from '../services/weather';
 
 export default function WeatherScreen() {
   const route = useRoute<RouteProp<RootTabParamList, 'Weather'>>();
   const [forecast, setForecast] = useState<DailyForecast[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     if (route.params?.lat && route.params?.lon) {
@@ -33,15 +36,40 @@ export default function WeatherScreen() {
     }
   }, []);
 
+  const onSubmitSearch = useCallback(async () => {
+    const q = query.trim();
+    if (!q) return;
+    setLoading(true);
+    try {
+      const result = await getWeatherByCityName(q);
+      setForecast(result.weekly || []);
+    } catch (e){
+      console.error(e);
+      Alert.alert('Unable to fetch weather', String(e));
+    }
+    finally {
+      setLoading(false);
+    }
+  }, [query]);
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.select({ios: 'padding', android: undefined})}>
       {!route.params?.lat && !route.params?.lon ? (
         <View style={styles.noticeBox}>
-          <Text style={styles.noticeTitle}>No location selected</Text>
+          <Text style={styles.noticeTitle}>Search a location</Text>
+          <TextInput
+            placeholder="Search city or place"
+            placeholderTextColor="#999"
+            style={styles.searchBox}
+            returnKeyType="search"
+            value={query}
+            onChangeText={setQuery}
+            onSubmitEditing={onSubmitSearch}
+          />
           <Text style={styles.noticeText}>
-            Go to the Map tab and long‑press anywhere to choose a location.
+            Or go to the Map tab and tap anywhere to choose a location.
           </Text>
         </View>
       ) : null}
@@ -89,6 +117,17 @@ const styles = StyleSheet.create({
   },
   noticeText: {
     color: '#555'
+  },
+  searchBox: {
+    marginTop: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: 'white',
+    color: '#111'
   },
   list: {
     paddingBottom: 24

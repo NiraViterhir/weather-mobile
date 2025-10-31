@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { geocodeByName } from './geocoding';
 
 const OPEN_METEO_BASE = 'https://api.open-meteo.com/v1/forecast';
 
@@ -10,6 +11,9 @@ export type DailyForecast = {
   weatherCode?: number;
 };
 
+/**
+ * Fetch current weather for a city by coordinates using Open-Meteo Geocoding API
+ */
 export async function getCurrentWeather(
   lat: number,
   lon: number,
@@ -30,6 +34,9 @@ export async function getCurrentWeather(
   };
 }
 
+/**
+ * Fetch weekly forecast by coordinates using Open-Meteo API
+ */
 export async function getWeeklyForecast(
   lat: number,
   lon: number,
@@ -55,4 +62,40 @@ export async function getWeeklyForecast(
     precipitationChance: precip[i],
     weatherCode: codes[i],
   }));
+}
+
+export type CityWeather = {
+  location?: {lat: number; lon: number; name?: string; country?: string};
+  current: {tempC: number; weatherCode?: number} | null;
+  weekly: DailyForecast[];
+};
+
+/**
+ * Resolve a city name to coordinates using Open-Meteo Geocoding API, then
+ * reuse getCurrentWeather and getWeeklyForecast to fetch data.
+ */
+export async function getWeatherByCityName(cityName: string): Promise<CityWeather> {
+  const first = await geocodeByName(cityName);
+  if (!first) {
+    return {current: null, weekly: []};
+  }
+
+  const lat: number = first.lat;
+  const lon: number = first.lon;
+
+  const [current, weekly] = await Promise.all([
+    getCurrentWeather(lat, lon),
+    getWeeklyForecast(lat, lon),
+  ]);
+
+  return {
+    location: {
+      lat,
+      lon,
+      name: first.name as string | undefined,
+      country: first.country as string | undefined,
+    },
+    current,
+    weekly,
+  };
 }
