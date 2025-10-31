@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 import MapView, { Callout, LatLng, MapPressEvent, Marker, Region, } from 'react-native-maps';
-import { reverseGeocodeCity } from '../services/geocoding';
-import { getCurrentWeather } from '../services/weather';
+import { reverseGeocodeCity } from '../../services/geocoding';
+import { getCurrentWeather } from '../../services/weather';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import type { RootTabParamList } from '../navigation/types';
+import type { RootTabParamList } from '../../navigation/types';
 
 type Props = BottomTabScreenProps<RootTabParamList, 'Map'>;
 type CityWeatherInfo = { name: string, temperature: number };

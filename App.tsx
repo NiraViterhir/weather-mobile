@@ -4,8 +4,8 @@ import { createBottomTabNavigator, type BottomTabNavigationOptions } from '@reac
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { IoniconsIconName }  from '@react-native-vector-icons/ionicons';
 
-import MapScreen from './src/screens/MapScreen';
-import WeatherScreen from './src/screens/WeatherScreen';
+import MapScreen from './src/screens/map/MapScreen';
+import WeatherScreen from './src/screens/weather/WeatherScreen';
 import type { RootTabParamList } from './src/navigation/types';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
