@@ -71,7 +71,7 @@ export type CityWeather = {
 };
 
 /**
- * Resolve a city name to coordinates using Open-Meteo Geocoding API, then
+ * Resolve a city name to coordinates using Google API, then
  * reuse getCurrentWeather and getWeeklyForecast to fetch data.
  */
 export async function getWeatherByCityName(cityName: string): Promise<CityWeather> {

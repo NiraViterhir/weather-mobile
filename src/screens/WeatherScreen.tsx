@@ -1,17 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-  Alert,
-} from 'react-native';
+import { Alert, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import type { RootTabParamList } from '../navigation/types';
-import { getWeeklyForecast, DailyForecast, getWeatherByCityName } from '../services/weather';
+import { DailyForecast, getWeatherByCityName, getWeeklyForecast } from '../services/weather';
 
 export default function WeatherScreen() {
   const route = useRoute<RouteProp<RootTabParamList, 'Weather'>>();
@@ -19,22 +10,26 @@ export default function WeatherScreen() {
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
 
-  useEffect(() => {
-    if (route.params?.lat && route.params?.lon) {
-      loadForecast(route.params.lat, route.params.lon);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route.params?.lat, route.params?.lon]);
-
-  const loadForecast = useCallback(async (lat: number, lon: number) => {
+  const loadForecast = useCallback(async (latitude: number, longitude: number) => {
     setLoading(true);
     try {
-      const days = await getWeeklyForecast(lat, lon);
+      const days = await getWeeklyForecast(latitude, longitude);
       setForecast(days);
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const { lat, lon, city } = route.params ?? {};
+
+  useEffect(() => {
+    if (typeof lat === 'number' && typeof lon === 'number') {
+      loadForecast(lat, lon);
+    }
+    if (typeof city === 'string') {
+      setQuery(city);
+    }
+  }, [lat, lon, city, loadForecast]);
 
   const onSubmitSearch = useCallback(async () => {
     const q = query.trim();
@@ -43,11 +38,10 @@ export default function WeatherScreen() {
     try {
       const result = await getWeatherByCityName(q);
       setForecast(result.weekly || []);
-    } catch (e){
+    } catch (e) {
       console.error(e);
       Alert.alert('Unable to fetch weather', String(e));
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   }, [query]);
@@ -56,23 +50,23 @@ export default function WeatherScreen() {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.select({ios: 'padding', android: undefined})}>
-      {!route.params?.lat && !route.params?.lon ? (
-        <View style={styles.noticeBox}>
-          <Text style={styles.noticeTitle}>Search a location</Text>
-          <TextInput
-            placeholder="Search city or place"
-            placeholderTextColor="#999"
-            style={styles.searchBox}
-            returnKeyType="search"
-            value={query}
-            onChangeText={setQuery}
-            onSubmitEditing={onSubmitSearch}
-          />
-          <Text style={styles.noticeText}>
-            Or go to the Map tab and tap anywhere to choose a location.
-          </Text>
-        </View>
-      ) : null}
+
+      <View style={styles.noticeBox}>
+        <Text style={styles.noticeTitle}>Search a location</Text>
+        <TextInput
+          placeholder="Search city or place"
+          placeholderTextColor="#999"
+          style={styles.searchBox}
+          returnKeyType="search"
+          value={query}
+          onChangeText={setQuery}
+          onSubmitEditing={onSubmitSearch}
+        />
+        <Text style={styles.noticeText}>
+          Or go to the Map tab and tap anywhere to choose a location.
+        </Text>
+      </View>
+
       <FlatList
         data={forecast || []}
         keyExtractor={item => item.date}
