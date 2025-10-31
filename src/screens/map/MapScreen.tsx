@@ -1,10 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import MapView, { Callout, LatLng, MapPressEvent, Marker, Region, } from 'react-native-maps';
 import { reverseGeocodeCity } from '../../services/geocoding';
 import { getCurrentWeather } from '../../services/weather';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { RootTabParamList } from '../../navigation/types';
+import CurrentWeather from "./CurrentWeather.tsx";
+import Tip from "./Tip.tsx";
 
 type Props = BottomTabScreenProps<RootTabParamList, 'Map'>;
 type CityWeatherInfo = { name: string, temperature: number };
@@ -80,33 +82,13 @@ export default function MapScreen({navigation}: Props) {
             coordinate={marker}
           >
             <Callout onPress={onCalloutPress}>
-              <View style={styles.callout}>
-                {loading ? (
-                  <ActivityIndicator/>
-                ) : (
-                  <>
-                    <Text style={styles.title}>
-                      {city || 'Tap marker to load'}
-                    </Text>
-                    {tempC != null && (
-                      <Text style={styles.subtitle}>{Math.round(tempC)}°C</Text>
-                    )}
-                    <Text style={styles.hint}>
-                      Tap to view weekly forecast →
-                    </Text>
-                  </>
-                )}
-              </View>
+              <CurrentWeather city={city} loading={loading} tempC={tempC}/>
             </Callout>
           </Marker>
         )}
       </MapView>
       {!marker && (
-        <View style={styles.tip}>
-          <Text style={styles.tipText}>
-            Tap anywhere to drop a marker
-          </Text>
-        </View>
+        <Tip/>
       )}
     </View>
   );
@@ -115,35 +97,5 @@ export default function MapScreen({navigation}: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  callout: {
-    minHeight: 120,
-    maxWidth: 220,
-    padding: 8,
-  },
-  title: {
-    fontWeight: '600',
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  hint: {
-    fontSize: 12,
-    color: '#666',
-  },
-  tip: {
-    position: 'absolute',
-    top: 16,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  tipText: {
-    color: 'white',
   },
 });
