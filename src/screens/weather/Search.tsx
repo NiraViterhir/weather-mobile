@@ -21,7 +21,7 @@ export default function Search(props: SearchProps) {
         onSubmitEditing={props.onSubmitSearch}
       />
       <Text style={styles.noticeText}>
-        Or go to the Map tab and tap anywhere to choose a location.
+        Or go to the Map tab and long-press anywhere to choose a location.
       </Text>
     </View>
   )

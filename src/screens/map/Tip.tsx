@@ -5,7 +5,7 @@ export default function Tip() {
   return (
     <View style={styles.tip}>
       <Text style={styles.tipText}>
-        Tap anywhere to drop a marker
+        Long-press anywhere to drop a marker
       </Text>
     </View>
   )

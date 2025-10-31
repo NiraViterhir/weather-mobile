@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import MapView, { Callout, LatLng, MapPressEvent, Marker, Region, } from 'react-native-maps';
+import MapView, { Callout, LatLng, LongPressEvent, Marker, Region, } from 'react-native-maps';
 import { reverseGeocodeCity } from '../../services/geocoding';
 import { getCurrentWeather } from '../../services/weather';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -17,7 +17,7 @@ export default function MapScreen({navigation}: Props) {
   const [tempC, setTempC] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const onPress = useCallback(async (e: MapPressEvent) => {
+  const onLongPress = useCallback(async (e: LongPressEvent) => {
     const newCoordinates = e.nativeEvent.coordinate;
     setLoading(true);
     try {
@@ -76,7 +76,7 @@ export default function MapScreen({navigation}: Props) {
       <MapView
         style={StyleSheet.absoluteFill}
         initialRegion={initialRegion}
-        onPress={onPress}>
+        onLongPress={onLongPress}>
         {marker && (
           <Marker
             coordinate={marker}
