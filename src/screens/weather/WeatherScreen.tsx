@@ -3,8 +3,8 @@ import { Alert, KeyboardAvoidingView, Platform, StyleSheet, } from 'react-native
 import { RouteProp, useRoute } from '@react-navigation/native';
 import type { RootTabParamList } from '../../navigation/types';
 import { DailyForecast, getWeatherByCityName, getWeeklyForecast } from '../../services/weather';
-import Search from "./Search.tsx";
-import ForecastList from "./ForecastList.tsx";
+import Search from "../../components/weather/Search";
+import ForecastList from "../../components/weather/ForecastList";
 
 export default function WeatherScreen() {
   const route = useRoute<RouteProp<RootTabParamList, 'Weather'>>();

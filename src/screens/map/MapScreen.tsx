@@ -5,8 +5,8 @@ import { reverseGeocodeCity } from '../../services/geocoding';
 import { getCurrentWeather } from '../../services/weather';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { RootTabParamList } from '../../navigation/types';
-import CurrentWeather from "./CurrentWeather.tsx";
-import Tip from "./Tip.tsx";
+import CurrentWeather from "../../components/map/CurrentWeather";
+import Tip from "../../components/map/Tip";
 
 type Props = BottomTabScreenProps<RootTabParamList, 'Map'>;
 type CityWeatherInfo = { name: string, temperature: number };

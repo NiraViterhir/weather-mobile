@@ -14,8 +14,8 @@ export default function CurrentWeather(props: CurrentWeatherProps) {
 
   useEffect(() => {
     if (props.city) {
-      const {city, rest} = parseLocationLabel(props.city);
-      setCity(city);
+      const {city: parsedCity, rest} = parseLocationLabel(props.city);
+      setCity(parsedCity);
       setDistrict(rest);
     }
   }, [props.city]);
@@ -75,3 +75,4 @@ const styles = StyleSheet.create({
     color: '#666',
   },
 })
+
