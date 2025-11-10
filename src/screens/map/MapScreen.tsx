@@ -7,6 +7,7 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { RootTabParamList } from '../../navigation/types';
 import CurrentWeather from "../../components/map/CurrentWeather";
 import Tip from "../../components/map/Tip";
+import { styles } from "./MapScreen.styles";
 
 type Props = BottomTabScreenProps<RootTabParamList, 'Map'>;
 type CityWeatherInfo = { name: string, temperature: number };
@@ -94,8 +95,4 @@ export default function MapScreen({navigation}: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+ 

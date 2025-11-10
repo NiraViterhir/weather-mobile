@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import type { RootTabParamList } from '../../navigation/types';
 import { DailyForecast, getWeatherByCityName, getWeeklyForecast } from '../../services/weather';
 import Search from "../../components/weather/Search";
 import ForecastList from "../../components/weather/ForecastList";
+import { styles } from "./WeatherScreen.styles";
 
 export default function WeatherScreen() {
   const route = useRoute<RouteProp<RootTabParamList, 'Weather'>>();
@@ -60,8 +61,4 @@ export default function WeatherScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, padding: 12
-  },
-});
+ 

@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import React from "react";
 import { DailyForecast } from "../../services/weather.ts";
+import { styles } from "./ForecastItem.styles";
 
 export default function ForecastItem(item: DailyForecast) {
   return (
@@ -21,28 +22,4 @@ export default function ForecastItem(item: DailyForecast) {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  card: {
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
-    marginBottom: 10,
-    backgroundColor: 'white',
-  },
-  dateAndTemp: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  date: {
-    fontWeight: '600', marginBottom: 6
-  },
-  temp: {
-    fontSize: 16, marginBottom: 4
-  },
-  precip: {
-    color: '#666'
-  },
-});
 

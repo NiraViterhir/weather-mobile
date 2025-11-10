@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import React from "react";
+import { styles } from "./Tip.styles";
 
 export default function Tip() {
   return (
@@ -10,19 +11,4 @@ export default function Tip() {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  tip: {
-    position: 'absolute',
-    top: 16,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  tipText: {
-    color: 'white',
-  },
-})
 

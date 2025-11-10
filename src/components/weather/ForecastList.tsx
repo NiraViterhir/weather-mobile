@@ -1,7 +1,8 @@
-import { FlatList, StyleSheet, Text } from "react-native";
+import { FlatList, Text } from "react-native";
 import React from "react";
 import { DailyForecast } from "../../services/weather.ts";
 import ForecastItem from "./ForecastItem.tsx";
+import { styles } from "./ForecastList.styles";
 
 interface ForecastListProps {
   forecast: DailyForecast[] | null,
@@ -21,13 +22,4 @@ export default function ForecastList(props: ForecastListProps) {
     />
   )
 }
-
-const styles = StyleSheet.create({
-  list: {
-    paddingBottom: 24
-  },
-  empty: {
-    textAlign: 'center', color: '#666', marginTop: 24
-  },
-});
 
